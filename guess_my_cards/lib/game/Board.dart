@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:guess_my_cards/WordCard.dart';
+
+import 'WordCard.dart';
 
 class Board extends StatelessWidget {
   @override
