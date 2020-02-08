@@ -19,8 +19,11 @@ class _CreateGameRouteState extends State<CreateGameRoute> {
     setState(() {
       loading = false;
     });
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => Board()));
+    if (result.isSuccess()) {
+      print("Result: ${result.data.code}");
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => Board()));
+    }
   }
 
   @override
