@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:guess_my_cards/game/Board.dart';
-import 'package:guess_my_cards/setup/CodeInputRoute.dart';
 
 import 'setup/CreateGameRoute.dart';
 

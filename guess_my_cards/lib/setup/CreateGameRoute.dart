@@ -16,11 +16,14 @@ class _CreateGameRouteState extends State<CreateGameRoute> {
       loading = true;
     });
     final result = await createGame();
+    if (result.isSuccess()) {
+      final game = await getGame(result.data);
+      print("Game: $game");
+    }
     setState(() {
       loading = false;
     });
     if (result.isSuccess()) {
-      print("Result: ${result.data.code}");
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => Board()));
     }

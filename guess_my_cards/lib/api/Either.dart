@@ -15,4 +15,13 @@ class NetworkResponse<L, R> {
   bool isSuccess() {
     return data != null;
   }
+
+  @override
+  String toString() {
+    if (isSuccess()) {
+      return "NetworkResponse success: $data";
+    } else {
+      return "NetworkResponse failure: $error";
+    }
+  }
 }
