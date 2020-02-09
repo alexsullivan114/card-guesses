@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:guess_my_cards/api/API.dart';
 import 'package:guess_my_cards/game/Board.dart';
+import 'package:guess_my_cards/models/GameCode.dart';
+import 'package:guess_my_cards/storage/preferences.dart';
 
 class CreateGameRoute extends StatefulWidget {
   @override
@@ -9,44 +12,93 @@ class CreateGameRoute extends StatefulWidget {
 }
 
 class _CreateGameRouteState extends State<CreateGameRoute> {
-  bool loading = false;
+  var loading = false;
+  final textController = TextEditingController();
 
   void handleCreateGamePressed() async {
     setState(() {
       loading = true;
     });
-    final result = await createGame();
-    if (result.isSuccess()) {
-      final game = await getGame(result.data);
-      print("Game: $game");
-    }
+    final createGameResult = await createGame();
     setState(() {
       loading = false;
     });
-    if (result.isSuccess()) {
+    if (createGameResult.isSuccess()) {
+      await saveGameCode(createGameResult.data);
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => Board()));
+    }
+  }
+
+  void handleSubmit(String text) async {
+    setState(() {
+      loading = true;
+    });
+
+    final code = GameCode(code: text);
+    await saveGameCode(code);
+    final gameResult = await getGame(code);
+
+    setState(() {
+      loading = false;
+    });
+
+    if (gameResult.isSuccess()) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => Board()));
+    } else {
+      print("Error");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          MaterialButton(
-            color: Colors.red,
-            onPressed: handleCreateGamePressed,
-            child: Text("Create a new game"),
-          ),
-          Visibility(
-              maintainState: true,
-              maintainAnimation: true,
-              maintainSize: true,
-              visible: loading,
-              child: CircularProgressIndicator())
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              width: double.infinity,
+              child: TextField(
+                onSubmitted: handleSubmit,
+                controller: textController,
+                textInputAction: TextInputAction.done,
+                maxLength: 4,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  helperText: "Input game code",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: Center(child: Text("-- OR -- ")),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: MaterialButton(
+                color: Colors.red,
+                onPressed: handleCreateGamePressed,
+                child: Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Text("Create a new game"),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 28.0),
+              child: Visibility(
+                  maintainState: true,
+                  maintainAnimation: true,
+                  maintainSize: true,
+                  visible: loading,
+                  child: CircularProgressIndicator()),
+            )
+          ],
+        ),
       ),
     );
   }
