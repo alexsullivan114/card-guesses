@@ -81,9 +81,12 @@ class _CreateGameRouteState extends State<CreateGameRoute> {
               ),
               SizedBox(
                 width: double.infinity,
-                child: MaterialButton(
-                  color: Colors.red,
+                child: FlatButton(
                   onPressed: handleCreateGamePressed,
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      side: BorderSide(color: Colors.black)),
                   child: Padding(
                     padding: const EdgeInsets.all(18.0),
                     child: Text("Create a new game"),

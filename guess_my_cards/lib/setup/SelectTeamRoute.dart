@@ -44,13 +44,14 @@ class SelectTeamRoute extends StatelessWidget {
 
   Widget _teamButton(Team team, BuildContext context) {
     final color = team == Team.Blue ? Colors.blue : Colors.red;
+    final text = team == Team.Blue ? "Blue" : "Red";
     return RaisedButton(
       color: Colors.white,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18.0),
           side: BorderSide(color: color)),
       child: Text(
-        "${team.toString()} Team",
+        "${text} Team",
         style: TextStyle(color: color),
       ),
       onPressed: () => _handleTeamPressed(team, context),
