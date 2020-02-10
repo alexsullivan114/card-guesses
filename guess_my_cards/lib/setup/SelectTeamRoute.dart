@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:guess_my_cards/game/Board.dart';
 import 'package:guess_my_cards/models/Team.dart';
+import 'package:guess_my_cards/setup/SelectRoleRoute.dart';
 import 'package:guess_my_cards/storage/preferences.dart';
 
 class SelectTeamRoute extends StatelessWidget {
-  void handleTeamPressed(Team team, BuildContext context) async {
+  void _handleTeamPressed(Team team, BuildContext context) async {
     await setTeam(team);
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => Board()));
+        .push(MaterialPageRoute(builder: (context) => SelectRoleRoute()));
   }
 
   @override
@@ -53,7 +53,7 @@ class SelectTeamRoute extends StatelessWidget {
         "${team.toString()} Team",
         style: TextStyle(color: color),
       ),
-      onPressed: () => handleTeamPressed(team, context),
+      onPressed: () => _handleTeamPressed(team, context),
     );
   }
 }
