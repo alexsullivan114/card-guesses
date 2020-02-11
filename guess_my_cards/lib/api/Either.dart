@@ -1,15 +1,16 @@
 class NetworkResponse<L, R> {
   L error;
   R data;
+  int statusCode;
 
-  NetworkResponse._internal(this.error, this.data);
+  NetworkResponse._internal(this.error, this.data, this.statusCode);
 
-  factory NetworkResponse.error(L left) {
-    return NetworkResponse._internal(left, null);
+  factory NetworkResponse.error(L left, int statusCode) {
+    return NetworkResponse._internal(left, null, statusCode);
   }
 
-  factory NetworkResponse.data(R right) {
-    return NetworkResponse._internal(null, right);
+  factory NetworkResponse.data(R right, int statusCode) {
+    return NetworkResponse._internal(null, right, statusCode);
   }
 
   bool isSuccess() {

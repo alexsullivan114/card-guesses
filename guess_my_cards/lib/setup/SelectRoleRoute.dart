@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:guess_my_cards/api/API.dart';
-import 'package:guess_my_cards/game/Board.dart';
+import 'package:guess_my_cards/game/BoardRoute.dart';
 import 'package:guess_my_cards/models/Role.dart';
 import 'package:guess_my_cards/models/Team.dart';
 import 'package:guess_my_cards/storage/preferences.dart';
@@ -9,14 +8,8 @@ import 'package:guess_my_cards/storage/preferences.dart';
 class SelectRoleRoute extends StatelessWidget {
   void _handleRolePressed(Role role, BuildContext context) async {
     await setRole(role);
-    final code = await getGameCode();
-    final gameResponse = await getGame(code);
-    if (gameResponse.isSuccess()) {
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => BoardRoute(gameResponse.data)));
-    } else {
-      print("Error");
-    }
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => BoardRoute()));
   }
 
   @override
