@@ -50,7 +50,7 @@ class WordCard extends StatelessWidget {
         child: Center(
             child: Text(
           word.text,
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.w600),
           textAlign: TextAlign.center,
         )),
       ),
