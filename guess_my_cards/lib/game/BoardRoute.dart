@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:guess_my_cards/api/API.dart';
+import 'package:guess_my_cards/models/Clue.dart';
 import 'package:guess_my_cards/models/Game.dart';
 import 'package:guess_my_cards/models/GameCode.dart';
 import 'package:guess_my_cards/models/Guess.dart';
@@ -53,11 +54,28 @@ class _BoardRouteState extends State<BoardRoute> {
     }
   }
 
+  void _handleClueInput(Clue clue) async {
+    final clueResponse = await postClue(clue, code);
+    if (clueResponse.isSuccess()) {
+      setState(() {
+        this.game = game;
+      });
+    } else {
+      print("Error submitting clue");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: game == null
-            ? CircularProgressIndicator()
-            : Board(game, role, team, _handleWordPressed));
+    return Container(
+      color: Colors.white,
+      child: SafeArea(
+        child: Scaffold(
+            body: game == null
+                ? Center(child: CircularProgressIndicator())
+                : Board(
+                    game, role, team, _handleWordPressed, _handleClueInput)),
+      ),
+    );
   }
 }

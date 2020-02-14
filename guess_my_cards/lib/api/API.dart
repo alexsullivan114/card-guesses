@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:guess_my_cards/models/Clue.dart';
 import 'package:guess_my_cards/models/Game.dart';
 import 'package:guess_my_cards/models/GameCode.dart';
 import 'package:guess_my_cards/models/Guess.dart';
@@ -9,7 +10,8 @@ import 'package:http/http.dart';
 
 import 'Either.dart';
 
-const baseApi = "http://localhost:8080";
+final baseApi =
+    Platform.isIOS ? "http://localhost:8080" : "http://10.0.2.2:8080";
 
 Future<NetworkResponse<dynamic, GameCode>> createGame() async {
   final response = await http.post('$baseApi/game');
@@ -26,6 +28,15 @@ Future<NetworkResponse<dynamic, Game>> postGuess(
   final body = jsonEncode(guess.toJson());
   final headers = {HttpHeaders.contentTypeHeader: "application/json"};
   final response = await http.post('$baseApi/game/${code.code}/guess',
+      headers: headers, body: body);
+  return response.wrappedResponse((map) => Game.fromJson(map));
+}
+
+Future<NetworkResponse<dynamic, Game>> postClue(
+    Clue clue, GameCode code) async {
+  final body = jsonEncode(clue.toJson());
+  final headers = {HttpHeaders.contentTypeHeader: "application/json"};
+  final response = await http.post('$baseApi/game/${code.code}/clue',
       headers: headers, body: body);
   return response.wrappedResponse((map) => Game.fromJson(map));
 }
