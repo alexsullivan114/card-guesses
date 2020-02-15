@@ -13,6 +13,7 @@ Game _$GameFromJson(Map<String, dynamic> json) {
         .map((e) => Word.fromJson(e as Map<String, dynamic>))
         .toList(),
     _$enumDecode(_$GameStatusEnumMap, json['status']),
+    Round.fromJson(json['currentRound'] as Map<String, dynamic>),
   );
 }
 
@@ -20,6 +21,7 @@ Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
       'gameCode': instance.gameCode,
       'words': instance.words,
       'status': _$GameStatusEnumMap[instance.status],
+      'currentRound': instance.currentRound,
     };
 
 T _$enumDecode<T>(

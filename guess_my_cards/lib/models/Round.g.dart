@@ -8,8 +8,10 @@ part of 'Round.dart';
 
 Round _$RoundFromJson(Map<String, dynamic> json) {
   return Round(
-    _$enumDecode(_$TeamEnumMap, json['teamUp']),
-    Clue.fromJson(json['clue'] as Map<String, dynamic>),
+    _$enumDecodeNullable(_$TeamEnumMap, json['teamUp']),
+    json['clue'] == null
+        ? null
+        : Clue.fromJson(json['clue'] as Map<String, dynamic>),
   );
 }
 
@@ -37,6 +39,17 @@ T _$enumDecode<T>(
         '${enumValues.values.join(', ')}');
   }
   return value ?? unknownValue;
+}
+
+T _$enumDecodeNullable<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
+  if (source == null) {
+    return null;
+  }
+  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$TeamEnumMap = {

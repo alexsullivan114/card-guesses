@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'Round.g.dart';
 
-@JsonSerializable(nullable: false)
+@JsonSerializable(nullable: true)
 class Round {
   final Team teamUp;
   final Clue clue;

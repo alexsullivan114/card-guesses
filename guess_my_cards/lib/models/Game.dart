@@ -1,4 +1,5 @@
 import 'package:guess_my_cards/models/GameCode.dart';
+import 'package:guess_my_cards/models/Round.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'Game.g.dart';
@@ -8,8 +9,9 @@ class Game {
   final GameCode gameCode;
   final List<Word> words;
   final GameStatus status;
+  final Round currentRound;
 
-  Game(this.gameCode, this.words, this.status);
+  Game(this.gameCode, this.words, this.status, this.currentRound);
 
   factory Game.fromJson(Map<String, dynamic> json) => _$GameFromJson(json);
 

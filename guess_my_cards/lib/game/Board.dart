@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:guess_my_cards/game/ClueDisplay.dart';
 import 'package:guess_my_cards/game/ClueInput.dart';
 import 'package:guess_my_cards/models/Clue.dart';
 import 'package:guess_my_cards/models/Game.dart';
@@ -27,6 +28,10 @@ class Board extends StatelessWidget {
       );
     }).toList();
 
+    final showClueInput = userRole == Role.Master &&
+        game.currentRound.clue == null &&
+        game.currentRound.teamUp == team;
+
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -45,7 +50,9 @@ class Board extends StatelessWidget {
           ),
           Padding(
               padding: const EdgeInsets.all(16.0),
-              child: ClueInput(_handleClueInput))
+              child: showClueInput
+                  ? ClueInput(_handleClueInput)
+                  : ClueDisplay(game.currentRound.clue))
         ],
       ),
     );
