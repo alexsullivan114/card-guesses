@@ -87,15 +87,17 @@ class _BoardRouteState extends State<BoardRoute> {
     final Team winningTeam = _winningTeam();
     return Container(
       color: Colors.white,
-      child: SafeArea(
-          child: Scaffold(
-        body: game == null
-            ? loadingIndicator
-            : Stack(children: [
-                Board(game, role, team, _handleWordPressed, _handleClueInput),
-                if (winningTeam != null) GameOverOverlay(winningTeam),
-              ]),
-      )),
+      child: Stack(
+        children: [
+          SafeArea(
+              child: Scaffold(
+            body: game == null
+                ? loadingIndicator
+                : Board(game, role, team, _handleWordPressed, _handleClueInput),
+          )),
+          if (winningTeam != null) GameOverOverlay(winningTeam),
+        ],
+      ),
     );
   }
 }
