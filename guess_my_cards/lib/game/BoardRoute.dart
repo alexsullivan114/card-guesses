@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:guess_my_cards/api/API.dart';
+import 'package:guess_my_cards/game/GameOverOverlay.dart';
 import 'package:guess_my_cards/models/Clue.dart';
 import 'package:guess_my_cards/models/Game.dart';
 import 'package:guess_my_cards/models/GameCode.dart';
@@ -20,6 +21,7 @@ class _BoardRouteState extends State<BoardRoute> {
   Team team;
   Role role;
   GameCode code;
+  Game game;
 
   @override
   void initState() {
@@ -31,11 +33,26 @@ class _BoardRouteState extends State<BoardRoute> {
     final team = await getTeam();
     final role = await getRole();
     final code = await getGameCode();
+    final gameResponse = await getGame(code);
     setState(() {
       this.code = code;
       this.role = role;
       this.team = team;
+      if (gameResponse.isSuccess()) {
+        this.game = gameResponse.data;
+      }
+      _observeGameStream();
     });
+  }
+
+  void _observeGameStream() async {
+    final stream = gameStream(code);
+    await for (var newGame in stream) {
+      print("Got a new game");
+      setState(() {
+        this.game = newGame;
+      });
+    }
   }
 
   void _handleWordPressed(Word word) async {
@@ -47,26 +64,38 @@ class _BoardRouteState extends State<BoardRoute> {
     await postClue(clue, code);
   }
 
+  Team _winningTeam() {
+    Team winningTeam;
+    switch (game?.status) {
+      case GameStatus.BlueWon:
+        winningTeam = Team.Blue;
+        break;
+      case GameStatus.RedWon:
+        winningTeam = Team.Red;
+        break;
+      default:
+        winningTeam = null;
+        break;
+    }
+
+    return winningTeam;
+  }
+
   @override
   Widget build(BuildContext context) {
     final loadingIndicator = Center(child: CircularProgressIndicator());
+    final Team winningTeam = _winningTeam();
     return Container(
       color: Colors.white,
       child: SafeArea(
-        child: Scaffold(
-            body: code == null
-                ? loadingIndicator
-                : StreamBuilder<Game>(
-                    stream: gameStream(code),
-                    builder: (context, snapshot) {
-                      if (snapshot.data != null) {
-                        return Board(snapshot.data, role, team,
-                            _handleWordPressed, _handleClueInput);
-                      } else {
-                        return loadingIndicator;
-                      }
-                    })),
-      ),
+          child: Scaffold(
+        body: game == null
+            ? loadingIndicator
+            : Stack(children: [
+                Board(game, role, team, _handleWordPressed, _handleClueInput),
+                if (winningTeam != null) GameOverOverlay(winningTeam),
+              ]),
+      )),
     );
   }
 }

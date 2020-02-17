@@ -39,7 +39,7 @@ class Board extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text("${game.gameCode.code}",
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           ),
           GridView.count(
             physics: NeverScrollableScrollPhysics(),

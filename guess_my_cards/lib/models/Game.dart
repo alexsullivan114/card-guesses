@@ -45,4 +45,4 @@ enum CardOwner { Red, Blue, Unowned, Assassin }
 
 enum GuessStatus { Guessed, NotGuessed }
 
-enum GameStatus { BlueWon, BedWon, Playing }
+enum GameStatus { BlueWon, RedWon, Playing }

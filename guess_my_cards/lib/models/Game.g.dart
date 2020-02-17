@@ -47,7 +47,7 @@ T _$enumDecode<T>(
 
 const _$GameStatusEnumMap = {
   GameStatus.BlueWon: 'BlueWon',
-  GameStatus.BedWon: 'BedWon',
+  GameStatus.RedWon: 'RedWon',
   GameStatus.Playing: 'Playing',
 };
 
