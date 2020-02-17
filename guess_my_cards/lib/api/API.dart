@@ -7,11 +7,19 @@ import 'package:guess_my_cards/models/GameCode.dart';
 import 'package:guess_my_cards/models/Guess.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:web_socket_channel/io.dart';
 
 import 'Either.dart';
 
-final baseApi =
-    Platform.isIOS ? "http://localhost:8080" : "http://10.0.2.2:8080";
+final coreApi = Platform.isIOS ? "localhost:8080" : "10.0.2.2:8080";
+final baseApi = "http://$coreApi";
+
+Stream<Game> gameStream(GameCode code) {
+  final channel =
+      IOWebSocketChannel.connect('ws://$coreApi/game/${code.code}/socket');
+
+  return channel.stream.map((data) => Game.fromJson(jsonDecode(data)));
+}
 
 Future<NetworkResponse<dynamic, GameCode>> createGame() async {
   final response = await http.post('$baseApi/game');

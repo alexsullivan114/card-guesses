@@ -17,7 +17,6 @@ class BoardRoute extends StatefulWidget {
 }
 
 class _BoardRouteState extends State<BoardRoute> {
-  Game game;
   Team team;
   Role role;
   GameCode code;
@@ -29,52 +28,44 @@ class _BoardRouteState extends State<BoardRoute> {
   }
 
   void _loadState() async {
-    team = await getTeam();
-    role = await getRole();
-    code = await getGameCode();
-
-    final gameResponse = await getGame(code);
-
-    if (gameResponse.isSuccess()) {
-      setState(() {
-        this.game = gameResponse.data;
-      });
-    }
+    final team = await getTeam();
+    final role = await getRole();
+    final code = await getGameCode();
+    setState(() {
+      this.code = code;
+      this.role = role;
+      this.team = team;
+    });
   }
 
   void _handleWordPressed(Word word) async {
     final guess = Guess(word.text, team);
-    final guessResponse = await postGuess(guess, code);
-    if (guessResponse.isSuccess()) {
-      setState(() {
-        game = guessResponse.data;
-      });
-    } else {
-      print("Error: code is ${guessResponse.statusCode}");
-    }
+    await postGuess(guess, code);
   }
 
   void _handleClueInput(Clue clue) async {
-    final clueResponse = await postClue(clue, code);
-    if (clueResponse.isSuccess()) {
-      setState(() {
-        this.game = game;
-      });
-    } else {
-      print("Error submitting clue");
-    }
+    await postClue(clue, code);
   }
 
   @override
   Widget build(BuildContext context) {
+    final loadingIndicator = Center(child: CircularProgressIndicator());
     return Container(
       color: Colors.white,
       child: SafeArea(
         child: Scaffold(
-            body: game == null
-                ? Center(child: CircularProgressIndicator())
-                : Board(
-                    game, role, team, _handleWordPressed, _handleClueInput)),
+            body: code == null
+                ? loadingIndicator
+                : StreamBuilder<Game>(
+                    stream: gameStream(code),
+                    builder: (context, snapshot) {
+                      if (snapshot.data != null) {
+                        return Board(snapshot.data, role, team,
+                            _handleWordPressed, _handleClueInput);
+                      } else {
+                        return loadingIndicator;
+                      }
+                    })),
       ),
     );
   }
