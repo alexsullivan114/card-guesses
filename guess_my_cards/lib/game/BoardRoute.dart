@@ -56,8 +56,10 @@ class _BoardRouteState extends State<BoardRoute> {
   }
 
   void _handleWordPressed(Word word) async {
-    final guess = Guess(word.text, team);
-    await postGuess(guess, code);
+    if (role != Role.Master) {
+      final guess = Guess(word.text, team);
+      await postGuess(guess, code);
+    }
   }
 
   void _handleClueInput(Clue clue) async {

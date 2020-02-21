@@ -20,6 +20,16 @@ class Board extends StatelessWidget {
   Board(this.game, this.userRole, this.team, this._handleWordPressed,
       this._handleClueInput);
 
+  Widget _clueDisplay() {
+    if (game.currentRound.clue != null) {
+      return ClueDisplay(game.currentRound.clue, game.currentRound.teamUp);
+    } else if (userRole == Role.Master && game.currentRound.teamUp == team) {
+      return ClueInput(_handleClueInput);
+    } else {
+      return AwaitingClueDisplay(game.currentRound.teamUp);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final cards = game.words.map((word) {
@@ -28,15 +38,6 @@ class Board extends StatelessWidget {
         child: WordCard(word, userRole, _handleWordPressed),
       );
     }).toList();
-
-    Widget clueDisplay;
-    if (game.currentRound.clue != null) {
-      clueDisplay = ClueDisplay(game.currentRound.clue, game.currentRound.teamUp);
-    } else if (userRole == Role.Master && game.currentRound.teamUp == team) {
-      clueDisplay = ClueInput(_handleClueInput);
-    } else {
-      clueDisplay = AwaitingClueDisplay(game.currentRound.teamUp);
-    }
 
     return SingleChildScrollView(
       child: Column(
@@ -54,10 +55,7 @@ class Board extends StatelessWidget {
             childAspectRatio: 0.7,
             children: cards,
           ),
-          Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: clueDisplay
-          )
+          Padding(padding: const EdgeInsets.all(16.0), child: _clueDisplay())
         ],
       ),
     );
