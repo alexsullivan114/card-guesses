@@ -13,11 +13,11 @@ class AwaitingClueDisplay extends StatelessWidget {
         text: TextSpan(
             style: TextStyle(fontSize: 28.0, color: Colors.black),
             children: [
-          TextSpan(text: "Waiting on"),
+          TextSpan(text: "Waiting for"),
           TextSpan(
               text: " ${_awaitingTeam.name}",
               style: TextStyle(color: _awaitingTeam.color)),
-          TextSpan(text: " team..."),
+          TextSpan(text: " team's clue..."),
         ]));
   }
 }
