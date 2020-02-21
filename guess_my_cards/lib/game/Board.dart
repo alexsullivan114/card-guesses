@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:guess_my_cards/game/ClueDisplay.dart';
-import 'package:guess_my_cards/game/ClueInput.dart';
+import 'package:guess_my_cards/game/clueDisplay/AwaitingClueDisplay.dart';
+import 'package:guess_my_cards/game/clueDisplay/ClueDisplay.dart';
+import 'package:guess_my_cards/game/clueDisplay/ClueInput.dart';
 import 'package:guess_my_cards/models/Clue.dart';
 import 'package:guess_my_cards/models/Game.dart';
 import 'package:guess_my_cards/models/Role.dart';
@@ -21,16 +22,21 @@ class Board extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final widgets = game.words.map((word) {
+    final cards = game.words.map((word) {
       return Padding(
         padding: const EdgeInsets.all(4.0),
         child: WordCard(word, userRole, _handleWordPressed),
       );
     }).toList();
 
-    final showClueInput = userRole == Role.Master &&
-        game.currentRound.clue == null &&
-        game.currentRound.teamUp == team;
+    Widget clueDisplay;
+    if (game.currentRound.clue != null) {
+      clueDisplay = ClueDisplay(game.currentRound.clue, game.currentRound.teamUp);
+    } else if (userRole == Role.Master && game.currentRound.teamUp == team) {
+      clueDisplay = ClueInput(_handleClueInput);
+    } else {
+      clueDisplay = AwaitingClueDisplay(game.currentRound.teamUp);
+    }
 
     return SingleChildScrollView(
       child: Column(
@@ -46,13 +52,12 @@ class Board extends StatelessWidget {
             shrinkWrap: true,
             crossAxisCount: 5,
             childAspectRatio: 0.7,
-            children: widgets,
+            children: cards,
           ),
           Padding(
               padding: const EdgeInsets.all(16.0),
-              child: showClueInput
-                  ? ClueInput(_handleClueInput)
-                  : ClueDisplay(game.currentRound.clue))
+              child: clueDisplay
+          )
         ],
       ),
     );

@@ -34,6 +34,7 @@ class _BoardRouteState extends State<BoardRoute> {
     final role = await getRole();
     final code = await getGameCode();
     final gameResponse = await getGame(code);
+    print("Team: ${team.name}");
     setState(() {
       this.code = code;
       this.role = role;
@@ -48,7 +49,6 @@ class _BoardRouteState extends State<BoardRoute> {
   void _observeGameStream() async {
     final stream = gameStream(code);
     await for (var newGame in stream) {
-      print("Got a new game");
       setState(() {
         this.game = newGame;
       });
@@ -90,10 +90,16 @@ class _BoardRouteState extends State<BoardRoute> {
       child: Stack(
         children: [
           SafeArea(
-              child: Scaffold(
-            body: game == null
-                ? loadingIndicator
-                : Board(game, role, team, _handleWordPressed, _handleClueInput),
+              child: Container(
+            decoration: BoxDecoration(
+                border: Border.all(color: team.color, width: 4),
+                color: Colors.white),
+            child: Scaffold(
+              body: game == null
+                  ? loadingIndicator
+                  : Board(
+                      game, role, team, _handleWordPressed, _handleClueInput),
+            ),
           )),
           if (winningTeam != null) GameOverOverlay(winningTeam),
         ],
