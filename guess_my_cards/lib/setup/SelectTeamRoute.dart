@@ -1,14 +1,38 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:guess_my_cards/game/BoardRoute.dart';
+import 'package:guess_my_cards/models/Role.dart';
 import 'package:guess_my_cards/models/Team.dart';
-import 'package:guess_my_cards/setup/SelectRoleRoute.dart';
+import 'package:guess_my_cards/setup/TeamSelector.dart';
 import 'package:guess_my_cards/storage/preferences.dart';
 
-class SelectTeamRoute extends StatelessWidget {
-  void _handleTeamPressed(Team team, BuildContext context) async {
-    await setTeam(team);
+class SelectTeamRoute extends StatefulWidget {
+  @override
+  _SelectTeamRouteState createState() => _SelectTeamRouteState();
+}
+
+class _SelectTeamRouteState extends State<SelectTeamRoute> {
+  Team selectedTeam = Team.Red;
+  Role selectedRole = Role.Guesser;
+
+  void _handleFabPressed() async {
+    await setTeam(selectedTeam);
+    await setRole(selectedRole);
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => SelectRoleRoute()));
+        .push(MaterialPageRoute(builder: (context) => BoardRoute()));
+  }
+
+  void _handleTeamPressed(Team team) {
+    setState(() {
+      selectedTeam = team;
+    });
+  }
+
+  void _handleRolePressed(Role role) {
+    setState(() {
+      selectedRole = role;
+    });
   }
 
   @override
@@ -17,24 +41,26 @@ class SelectTeamRoute extends StatelessWidget {
       color: Colors.white,
       child: SafeArea(
         child: Scaffold(
+          floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.done),
+            onPressed: _handleFabPressed,
+          ),
           body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
+              Spacer(),
               Center(
                   child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text("What team are you on?"),
+                child: Text("What's your team and role?",
+                    style:
+                        TextStyle(fontSize: 22)),
               )),
-              Expanded(
-                child: Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: _teamButton(Team.Red, context)),
+              Center(child: _teamSelector()),
+              Padding(
+                padding: const EdgeInsets.only(top: 22),
+                child: Center(child: _roleSelector()),
               ),
-              Expanded(
-                child: Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: _teamButton(Team.Blue, context)),
-              )
+              Spacer(),
             ],
           ),
         ),
@@ -42,19 +68,27 @@ class SelectTeamRoute extends StatelessWidget {
     );
   }
 
-  Widget _teamButton(Team team, BuildContext context) {
-    final color = team == Team.Blue ? Colors.blue : Colors.red;
-    final text = team == Team.Blue ? "Blue" : "Red";
-    return RaisedButton(
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18.0),
-          side: BorderSide(color: color)),
-      child: Text(
-        "${text} Team",
-        style: TextStyle(color: color),
-      ),
-      onPressed: () => _handleTeamPressed(team, context),
-    );
+  Widget _teamSelector() {
+    return TeamSelector(
+        Team.Red.name,
+        Team.Red.color,
+        () => _handleTeamPressed(Team.Red),
+        Team.Blue.name,
+        Team.Blue.color,
+        () => _handleTeamPressed(Team.Blue),
+        selectedTeam == Team.Red,
+        selectedTeam == Team.Blue);
+  }
+
+  Widget _roleSelector() {
+    return TeamSelector(
+        Role.Master.name,
+        selectedTeam.color,
+        () => _handleRolePressed(Role.Master),
+        Role.Guesser.name,
+        selectedTeam.color,
+        () => _handleRolePressed(Role.Guesser),
+        selectedRole == Role.Master,
+        selectedRole == Role.Guesser);
   }
 }

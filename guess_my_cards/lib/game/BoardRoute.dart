@@ -92,17 +92,12 @@ class _BoardRouteState extends State<BoardRoute> {
       child: Stack(
         children: [
           SafeArea(
-              child: Container(
-            decoration: BoxDecoration(
-                border: Border.all(color: team.color, width: 4),
-                color: Colors.white),
-            child: Scaffold(
-              body: game == null
-                  ? loadingIndicator
-                  : Board(
-                      game, role, team, _handleWordPressed, _handleClueInput),
-            ),
-          )),
+              child: Scaffold(
+                body: game == null
+                    ? loadingIndicator
+                    : Board(
+                        game, role, team, _handleWordPressed, _handleClueInput),
+              )),
           if (winningTeam != null) GameOverOverlay(winningTeam),
         ],
       ),
