@@ -19,8 +19,9 @@ class _SelectTeamRouteState extends State<SelectTeamRoute> {
   void _handleFabPressed() async {
     await setTeam(selectedTeam);
     await setRole(selectedRole);
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => BoardRoute()));
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => BoardRoute()),
+        (Route<dynamic> route) => false);
   }
 
   void _handleTeamPressed(Team team) {
@@ -52,8 +53,7 @@ class _SelectTeamRouteState extends State<SelectTeamRoute> {
                   child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text("What's your team and role?",
-                    style:
-                        TextStyle(fontSize: 22)),
+                    style: TextStyle(fontSize: 22)),
               )),
               Center(child: _teamSelector()),
               Padding(

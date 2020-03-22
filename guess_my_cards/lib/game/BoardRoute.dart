@@ -34,7 +34,6 @@ class _BoardRouteState extends State<BoardRoute> {
     final role = await getRole();
     final code = await getGameCode();
     final gameResponse = await getGame(code);
-    print("Team: ${team.name}");
     setState(() {
       this.code = code;
       this.role = role;

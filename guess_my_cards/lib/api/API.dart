@@ -11,8 +11,10 @@ import 'package:web_socket_channel/io.dart';
 
 import 'Either.dart';
 
-final coreApi = Platform.isIOS ? "localhost:8080" : "10.0.2.2:8080";
-final baseApi = "http://$coreApi";
+// final coreApi = Platform.isIOS ? "localhost:8080" : "10.0.2.2:8080";
+final coreApi = "pacific-lowlands-78447.herokuapp.com/";
+// final baseApi = "http://$coreApi";
+final baseApi = "https://$coreApi";
 
 Stream<Game> gameStream(GameCode code) {
   final channel =
