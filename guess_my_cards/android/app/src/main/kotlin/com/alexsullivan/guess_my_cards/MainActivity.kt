@@ -1,4 +1,4 @@
-package com.example.guess_my_cards
+package com.alexsullivan.guess_my_cards
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
