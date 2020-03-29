@@ -11,44 +11,45 @@ import 'package:web_socket_channel/io.dart';
 
 import 'Either.dart';
 
-// final coreApi = Platform.isIOS ? "localhost:8080" : "10.0.2.2:8080";
-final coreApi = "pacific-lowlands-78447.herokuapp.com/";
-// final baseApi = "http://$coreApi";
-final baseApi = "https://$coreApi";
+final prodCoreApi = "pacific-lowlands-78447.herokuapp.com/";
+final prodBaseApi = "https://$prodCoreApi";
+final devCoreApi = Platform.isIOS ? "localhost:8080" : "10.0.2.2:8080";
+final devBaseApi = "http://$devCoreApi";
+
+final coreApi = prodCoreApi;
+final baseApi = prodBaseApi;
 
 Stream<Game> gameStream(GameCode code) {
   final channel =
-      IOWebSocketChannel.connect('ws://$coreApi/game/${code.code}/socket');
+  IOWebSocketChannel.connect('ws://$coreApi/game/${code.code}/socket',
+      pingInterval: Duration(seconds: 20));
 
   return channel.stream.map((data) => Game.fromJson(jsonDecode(data)));
 }
 
 Future<NetworkResponse<dynamic, GameCode>> createGame() async {
-  final response = await http.post('$baseApi/game');
-  return response.wrappedResponse((map) => GameCode.fromJson(map));
+  return await http.post('$baseApi/game').executeRequest((map) => GameCode.fromJson(map));
 }
 
 Future<NetworkResponse<dynamic, Game>> getGame(GameCode code) async {
-  final response = await http.get('$baseApi/game/${code.code}');
-  return response.wrappedResponse((map) => Game.fromJson(map));
+  return await http.get('$baseApi/game/${code.code}').executeRequest((map) =>
+      Game.fromJson(map));
 }
 
 Future<NetworkResponse<dynamic, Game>> postGuess(
     Guess guess, GameCode code) async {
   final body = jsonEncode(guess.toJson());
   final headers = {HttpHeaders.contentTypeHeader: "application/json"};
-  final response = await http.post('$baseApi/game/${code.code}/guess',
-      headers: headers, body: body);
-  return response.wrappedResponse((map) => Game.fromJson(map));
+  return await http.post('$baseApi/game/${code.code}/guess',
+      headers: headers, body: body).executeRequest((map) => Game.fromJson(map));
 }
 
 Future<NetworkResponse<dynamic, Game>> postClue(
     Clue clue, GameCode code) async {
   final body = jsonEncode(clue.toJson());
   final headers = {HttpHeaders.contentTypeHeader: "application/json"};
-  final response = await http.post('$baseApi/game/${code.code}/clue',
-      headers: headers, body: body);
-  return response.wrappedResponse((map) => Game.fromJson(map));
+  return await http.post('$baseApi/game/${code.code}/clue',
+      headers: headers, body: body).executeRequest((map) => Game.fromJson(map));
 }
 
 extension ResponseExtension on Response {
@@ -60,6 +61,18 @@ extension ResponseExtension on Response {
       return NetworkResponse.data(objectCreator(jsonDecode(body)), statusCode);
     } else {
       return NetworkResponse.error(body, statusCode);
+    }
+  }
+}
+
+extension RequestExtension on Future<Response> {
+  Future<NetworkResponse<dynamic, T>> executeRequest<T>(
+      T Function(Map<String, dynamic>) objectCreator) async {
+    try {
+      final response = await this;
+      return response.wrappedResponse(objectCreator);
+    } catch (e) {
+      return NetworkResponse.error(e, -1);
     }
   }
 }
