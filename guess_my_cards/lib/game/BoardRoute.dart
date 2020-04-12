@@ -61,10 +61,6 @@ class _BoardRouteState extends State<BoardRoute> {
     }
   }
 
-  void _handleClueInput(Clue clue) async {
-    await postClue(clue, code);
-  }
-
   Team _winningTeam() {
     Team winningTeam;
     switch (game?.status) {
@@ -95,7 +91,7 @@ class _BoardRouteState extends State<BoardRoute> {
                 body: game == null
                     ? loadingIndicator
                     : Board(
-                        game, role, team, _handleWordPressed, _handleClueInput),
+                        game, role, team, _handleWordPressed, code),
               )),
           if (winningTeam != null) GameOverOverlay(winningTeam),
         ],

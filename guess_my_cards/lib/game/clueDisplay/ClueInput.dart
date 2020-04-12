@@ -4,30 +4,27 @@ import 'package:guess_my_cards/models/Clue.dart';
 
 class ClueInput extends StatefulWidget {
   final void Function(Clue) _handleClueInput;
+  final bool _loading;
 
-  ClueInput(this._handleClueInput);
+  ClueInput(this._handleClueInput, this._loading);
 
   @override
-  _ClueInputState createState() => _ClueInputState(_handleClueInput);
+  _ClueInputState createState() => _ClueInputState();
 }
 
 class _ClueInputState extends State<ClueInput> {
   String clueString = "";
   String guessCountString = "";
-  final void Function(Clue) _handleClueInput;
-
-  _ClueInputState(this._handleClueInput);
 
   void _submitClue() async {
     final guessCount = int.parse(guessCountString);
     final clue = Clue(clueString, guessCount);
-    _handleClueInput(clue);
+    widget._handleClueInput(clue);
   }
 
   @override
   Widget build(BuildContext context) {
-    final enableFab = clueString.isNotEmpty && guessCountString.isNotEmpty;
-    final fabColor = enableFab ? Colors.blue : Colors.grey;
+    final button = widget._loading ? CircularProgressIndicator() : _button();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -35,6 +32,9 @@ class _ClueInputState extends State<ClueInput> {
             flex: 2,
             child: TextField(
               onChanged: (text) => setState(() => clueString = text),
+              inputFormatters: [
+                BlacklistingTextInputFormatter(" ")
+              ],
               decoration: InputDecoration(
                 helperText: "Clue",
                 border: OutlineInputBorder(),
@@ -54,14 +54,20 @@ class _ClueInputState extends State<ClueInput> {
         )),
         Padding(
           padding: const EdgeInsets.only(left: 8.0, top: 5.0),
-          child: FloatingActionButton(
-            mini: true,
-            backgroundColor: fabColor,
-            child: Icon(Icons.done),
-            onPressed: enableFab ? _submitClue : null,
-          ),
+          child: button
         )
       ],
+    );
+  }
+
+  Widget _button() {
+    final enableFab = clueString.isNotEmpty && guessCountString.isNotEmpty;
+    final fabColor = enableFab ? Colors.blue : Colors.grey;
+    return FloatingActionButton(
+      mini: true,
+      backgroundColor: fabColor,
+      child: Icon(Icons.done),
+      onPressed: enableFab ? _submitClue : null,
     );
   }
 }

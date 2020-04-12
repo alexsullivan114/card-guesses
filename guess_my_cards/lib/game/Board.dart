@@ -1,41 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:guess_my_cards/api/API.dart';
 import 'package:guess_my_cards/game/clueDisplay/AwaitingClueDisplay.dart';
 import 'package:guess_my_cards/game/clueDisplay/ClueDisplay.dart';
 import 'package:guess_my_cards/game/clueDisplay/ClueInput.dart';
 import 'package:guess_my_cards/models/Clue.dart';
 import 'package:guess_my_cards/models/Game.dart';
+import 'package:guess_my_cards/models/GameCode.dart';
 import 'package:guess_my_cards/models/Role.dart';
 import 'package:guess_my_cards/models/Team.dart';
 
 import 'WordCard.dart';
 
-class Board extends StatelessWidget {
+class Board extends StatefulWidget {
   final Game game;
   final Role userRole;
   final Team team;
   final void Function(Word) _handleWordPressed;
-  final void Function(Clue) _handleClueInput;
+  final GameCode _code;
 
-  Board(this.game, this.userRole, this.team, this._handleWordPressed,
-      this._handleClueInput);
+  Board(this.game, this.userRole, this.team, this._handleWordPressed, this._code);
+
+  @override
+  _BoardState createState() => _BoardState();
+}
+
+class _BoardState extends State<Board> {
+  var loading = false;
+
+  void _handleClueInput(Clue clue) async {
+    setState(() {
+      this.loading = true;
+    });
+    final result = await postClue(clue, widget._code);
+    setState(() {
+      this.loading = false;
+    });
+
+    if (!result.isSuccess()) {
+      final snackbar = SnackBar(
+        content: Text("Woops. We messed up sending your clue. Try again!"),);
+      Scaffold.of(context).showSnackBar(snackbar);
+    }
+  }
 
   Widget _clueDisplay() {
-    if (game.currentRound.clue != null) {
-      return ClueDisplay(game.currentRound.clue, game.currentRound.teamUp);
-    } else if (userRole == Role.Master && game.currentRound.teamUp == team) {
-      return ClueInput(_handleClueInput);
+    if (widget.game.currentRound.clue != null) {
+      return ClueDisplay(widget.game.currentRound.clue, widget.game.currentRound.teamUp);
+    } else if (widget.userRole == Role.Master && widget.game.currentRound.teamUp == widget.team) {
+      return ClueInput(_handleClueInput, loading);
     } else {
-      return AwaitingClueDisplay(game.currentRound.teamUp);
+      return AwaitingClueDisplay(widget.game.currentRound.teamUp);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final cards = game.words.map((word) {
+    final cards = widget.game.words.map((word) {
       return Padding(
         padding: const EdgeInsets.all(4.0),
-        child: WordCard(word, userRole, _handleWordPressed),
+        child: WordCard(word, widget.userRole, widget._handleWordPressed),
       );
     }).toList();
 
@@ -45,7 +69,7 @@ class Board extends StatelessWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text("${game.gameCode.code}",
+            child: Text("${widget.game.gameCode.code}",
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           ),
           GridView.count(
