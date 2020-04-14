@@ -46,7 +46,8 @@ class _BoardState extends State<Board> {
 
   void _handleWordPressed(Word word, BuildContext context) async {
     if (widget.userRole != Role.Master &&
-        widget.game.currentRound.teamUp == widget.team) {
+        widget.game.currentRound.teamUp == widget.team &&
+        word.guessStatus != GuessStatus.Guessed) {
       showDialog(context: context, builder: (BuildContext context) {
         return AlertDialog(title: Text("Are you sure?"),
             content: Text(
