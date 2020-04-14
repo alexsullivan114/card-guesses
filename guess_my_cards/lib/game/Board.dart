@@ -7,6 +7,7 @@ import 'package:guess_my_cards/game/clueDisplay/ClueInput.dart';
 import 'package:guess_my_cards/models/Clue.dart';
 import 'package:guess_my_cards/models/Game.dart';
 import 'package:guess_my_cards/models/GameCode.dart';
+import 'package:guess_my_cards/models/Guess.dart';
 import 'package:guess_my_cards/models/Role.dart';
 import 'package:guess_my_cards/models/Team.dart';
 
@@ -16,10 +17,9 @@ class Board extends StatefulWidget {
   final Game game;
   final Role userRole;
   final Team team;
-  final void Function(Word) _handleWordPressed;
   final GameCode _code;
 
-  Board(this.game, this.userRole, this.team, this._handleWordPressed, this._code);
+  Board(this.game, this.userRole, this.team, this._code);
 
   @override
   _BoardState createState() => _BoardState();
@@ -44,6 +44,27 @@ class _BoardState extends State<Board> {
     }
   }
 
+  void _handleWordPressed(Word word, BuildContext context) async {
+    if (widget.userRole != Role.Master &&
+        widget.game.currentRound.teamUp == widget.team) {
+      showDialog(context: context, builder: (BuildContext context) {
+        return AlertDialog(title: Text("Are you sure?"),
+            content: Text(
+                "Do you rrreeaalllllyyy want to guess this word?"),
+            actions: <Widget>[
+              FlatButton(child: Text("No"), onPressed: () {
+                Navigator.of(context).pop();
+              },),
+              FlatButton(child: Text("Yes"), onPressed: () async {
+                final guess = Guess(word.text, widget.team);
+                await postGuess(guess, widget._code);
+                Navigator.of(context).pop();
+              },)
+            ]);
+      });
+    }
+  }
+
   Widget _clueDisplay() {
     if (widget.game.currentRound.clue != null) {
       return ClueDisplay(widget.game.currentRound.clue, widget.game.currentRound.teamUp);
@@ -59,7 +80,9 @@ class _BoardState extends State<Board> {
     final cards = widget.game.words.map((word) {
       return Padding(
         padding: const EdgeInsets.all(4.0),
-        child: WordCard(word, widget.userRole, widget._handleWordPressed),
+        child: WordCard(word, widget.userRole, (Word word) {
+          _handleWordPressed(word, context);
+        }),
       );
     }).toList();
 

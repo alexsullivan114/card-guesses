@@ -54,13 +54,6 @@ class _BoardRouteState extends State<BoardRoute> {
     }
   }
 
-  void _handleWordPressed(Word word) async {
-    if (role != Role.Master) {
-      final guess = Guess(word.text, team);
-      await postGuess(guess, code);
-    }
-  }
-
   Team _winningTeam() {
     Team winningTeam;
     switch (game?.status) {
@@ -90,8 +83,7 @@ class _BoardRouteState extends State<BoardRoute> {
               child: Scaffold(
                 body: game == null
                     ? loadingIndicator
-                    : Board(
-                        game, role, team, _handleWordPressed, code),
+                    : Board(game, role, team, code),
               )),
           if (winningTeam != null) GameOverOverlay(winningTeam),
         ],
