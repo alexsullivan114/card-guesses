@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:guess_my_cards/api/API.dart';
+import 'package:guess_my_cards/game/GuessWordConfirmation.dart';
 import 'package:guess_my_cards/game/clueDisplay/AwaitingClueDisplay.dart';
 import 'package:guess_my_cards/game/clueDisplay/ClueDisplay.dart';
 import 'package:guess_my_cards/game/clueDisplay/ClueInput.dart';
 import 'package:guess_my_cards/models/Clue.dart';
 import 'package:guess_my_cards/models/Game.dart';
 import 'package:guess_my_cards/models/GameCode.dart';
-import 'package:guess_my_cards/models/Guess.dart';
 import 'package:guess_my_cards/models/Role.dart';
 import 'package:guess_my_cards/models/Team.dart';
 
@@ -49,19 +49,7 @@ class _BoardState extends State<Board> {
         widget.game.currentRound.teamUp == widget.team &&
         word.guessStatus != GuessStatus.Guessed) {
       showDialog(context: context, builder: (BuildContext context) {
-        return AlertDialog(title: Text("Are you sure?"),
-            content: Text(
-                "Do you rrreeaalllllyyy want to guess this word?"),
-            actions: <Widget>[
-              FlatButton(child: Text("No"), onPressed: () {
-                Navigator.of(context).pop();
-              },),
-              FlatButton(child: Text("Yes"), onPressed: () async {
-                final guess = Guess(word.text, widget.team);
-                await postGuess(guess, widget._code);
-                Navigator.of(context).pop();
-              },)
-            ]);
+        return GuessWordConfirmationDialog(word, widget.team, widget._code);
       });
     }
   }
