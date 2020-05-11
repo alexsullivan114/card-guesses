@@ -52,6 +52,12 @@ Future<NetworkResponse<dynamic, Game>> postClue(
       headers: headers, body: body).executeRequest((map) => Game.fromJson(map));
 }
 
+Future<NetworkResponse<dynamic, Game>> postPass(GameCode code) async {
+  final headers = {HttpHeaders.contentTypeHeader: "application/json"};
+  return await http.post('$baseApi/game/${code.code}/pass',
+      headers: headers).executeRequest((map) => Game.fromJson(map));
+}
+
 extension ResponseExtension on Response {
   get success => statusCode >= 200 && statusCode < 300;
 

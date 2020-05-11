@@ -58,7 +58,7 @@ class _BoardState extends State<Board> {
     if (widget.game.currentRound.clue != null) {
       return ClueDisplay(
           widget.game.currentRound.clue, widget.game.currentRound.teamUp,
-          widget.userRole);
+          widget.userRole, widget._code);
     } else if (widget.userRole == Role.Master &&
         widget.game.currentRound.teamUp == widget.team) {
       return ClueInput(_handleClueInput, loading);

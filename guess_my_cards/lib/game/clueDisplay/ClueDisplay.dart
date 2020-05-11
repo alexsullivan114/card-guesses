@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:guess_my_cards/api/API.dart';
 import 'package:guess_my_cards/game/LoadingDialog.dart';
 import 'package:guess_my_cards/models/Clue.dart';
+import 'package:guess_my_cards/models/GameCode.dart';
 import 'package:guess_my_cards/models/Role.dart';
 import 'package:guess_my_cards/models/Team.dart';
 
@@ -10,13 +12,14 @@ class ClueDisplay extends StatelessWidget {
   final Clue _clue;
   final Team _teamGuessing;
   final Role _userRole;
+  final GameCode _code;
 
-  ClueDisplay(this._clue, this._teamGuessing, this._userRole);
+  ClueDisplay(this._clue, this._teamGuessing, this._userRole, this._code);
 
   void _handlePassPressed(BuildContext context) {
     showDialog(context: context, builder: (BuildContext context) {
       final callback = () {
-        return Future.delayed(Duration(seconds: 5));
+        return postPass(this._code);
       };
       return LoadingDialog(
           "Do you rrreeaalllllyyy want to pass?", "Passing...",
